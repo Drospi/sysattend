@@ -1,0 +1,34 @@
+fastapi
+uvicorn[standard]==0.29.0
+sqlalchemy==2.0.30
+pydantic
+pydantic-settings==2.2.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+aiofiles==23.2.1
+pillow
+numpy
+scipy
+
+# Visión Artificial (instalar según hardware disponible)
+opencv-python-headless
+# mediapipe==0.10.14          # Descomentar para usar MediaPipe
+# tensorflow==2.16.1          # Descomentar para CNN completa
+# tensorflow-cpu==2.16.1      # Alternativa sin GPU
+
+# Base de datos alternativa (descomentar para PostgreSQL)
+# psycopg2-binary==2.9.9
+# alembic==1.13.1
+
+# Reportes
+reportlab==4.1.0
+openpyxl==3.1.2
+
+# Notificaciones (opcional)
+# twilio==9.0.4
+# httpx==0.27.0
+
+# Testing
+pytest==8.2.0
+httpx==0.27.0
