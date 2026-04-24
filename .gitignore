@@ -1,0 +1,59 @@
+# =========================
+# Entorno y Configuración
+# =========================
+# Ignorar variables de entorno (¡MUY IMPORTANTE para la seguridad!)
+.env
+.env.*
+!.env.example
+
+# =========================
+# Backend (Python)
+# =========================
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Base de datos local (veo un archivo 'sysatte...' que parece ser una BD SQLite)
+*.sqlite3
+*.db
+
+# Archivos subidos o generados localmente por la app
+backend/uploads/
+
+# =========================
+# Frontend (NodeJS / React)
+# =========================
+# Dependencias de Node
+frontend/node_modules/
+node_modules/
+
+# Archivos de compilación de producción (Vite/React)
+frontend/dist/
+frontend/build/
+dist/
+build/
+
+# Logs de NPM/Yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Sistema Operativo y Editores
+# =========================
+# Windows
+Thumbs.db
+desktop.ini
+
+# macOS
+.DS_Store
+
+# VS Code (Opcional: ignora la configuración personal del editor)
+.vscode/

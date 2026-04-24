@@ -251,7 +251,7 @@ async def reconocer_rostro(
             "nombre": f"{estudiante.nombres} {estudiante.apellido_paterno}" if estudiante else None,
             "foto_url": estudiante.foto_url if estudiante else None,
             "estado": estado,
-            "confianza": round(confianza * 100, 1),
+            "confianza": confianza,
             "mensaje": f"Asistencia registrada: {estado.upper()}"
         }
 

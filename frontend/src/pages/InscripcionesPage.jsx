@@ -19,23 +19,32 @@ export default function InscripcionesPage() {
   const [formMasivo, setFormMasivo] = useState({ materia_id: '', periodo_id: '', grupo: 'A', carrera_id: '' })
   const [saving, setSaving] = useState(false)
 
-  const cargar = async () => {
+const cargar = async () => {
     setLoading(true)
     try {
+      // 1. Limpiamos los filtros para no enviar textos vacíos a FastAPI
+      const filtrosLimpios = {}
+      if (filtros.materia_id) filtrosLimpios.materia_id = filtros.materia_id
+      if (filtros.periodo_id) filtrosLimpios.periodo_id = filtros.periodo_id
+
       const [iRes, eRes, mRes, pRes, cRes] = await Promise.all([
-        inscripcionesAPI.listar({ ...filtros }),
+        inscripcionesAPI.listar(filtrosLimpios), // <-- Enviamos el objeto limpio
         estudiantesAPI.listar({ limit: 200 }),
         materiasAPI.listar(),
         periodosAPI.listar(),
         carrerasAPI.listar(),
       ])
+      
       setInscripciones(iRes.data.data)
       setEstudiantes(eRes.data.data)
       setMaterias(mRes.data.data)
       setPeriodos(pRes.data.data)
       setCarreras(cRes.data.data)
-    } catch { toast.error('Error al cargar datos') }
-    finally { setLoading(false) }
+    } catch { 
+      toast.error('Error al cargar datos') 
+    } finally { 
+      setLoading(false) 
+    }
   }
 
   useEffect(() => { cargar() }, [filtros.materia_id, filtros.periodo_id])

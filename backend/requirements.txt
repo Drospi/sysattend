@@ -1,8 +1,8 @@
-fastapi
-uvicorn[standard]==0.29.0
-sqlalchemy==2.0.30
-pydantic
-pydantic-settings==2.2.1
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+sqlalchemy==2.0.35
+pydantic==2.8.0
+pydantic-settings==2.3.0
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.9
@@ -11,11 +11,11 @@ pillow
 numpy
 scipy
 
-# Visión Artificial (instalar según hardware disponible)
+# Visión Artificial e IA (Reconocimiento Facial)
 opencv-python-headless
-# mediapipe==0.10.14          # Descomentar para usar MediaPipe
-# tensorflow==2.16.1          # Descomentar para CNN completa
-# tensorflow-cpu==2.16.1      # Alternativa sin GPU
+mediapipe
+deepface
+tf-keras
 
 # Base de datos alternativa (descomentar para PostgreSQL)
 # psycopg2-binary==2.9.9
