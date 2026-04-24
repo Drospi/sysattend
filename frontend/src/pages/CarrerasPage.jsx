@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { Plus, Pencil, Trash2, ChevronRight, BookOpen, Save, X, Building2 } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { carrerasAPI } from '../services/api'
+import { carrerasAPI, materiasAPI } from '../services/api'
 import { Modal, ConfirmDialog, SectionHeader, FormField, EmptyState, Spinner, Alert } from '../components/ui'
 
 // ── FORM CARRERA ──────────────────────────────────────────
@@ -85,6 +85,17 @@ export default function CarrerasPage() {
     cargar()
   }
 
+  const handleSeed = async () => {
+    try {
+      await materiasAPI.seed({ force: true })
+      toast.success('Datos iniciales creados. Materias de ejemplo añadidas')
+      cargar()
+    } catch (error) {
+    console.error('Error en seed:', error)
+    toast.error('Error al crear datos iniciales')
+    }
+  }
+
   if (loading) return <div className="flex justify-center py-20"><Spinner size={28} /></div>
 
   return (
@@ -92,7 +103,14 @@ export default function CarrerasPage() {
       <SectionHeader
         title="Carreras y Materias"
         subtitle={`${carreras.length} carreras registradas`}
-        actions={<button onClick={() => setModal('new')} className="btn-primary flex items-center gap-2"><Plus size={15}/> Nueva Carrera</button>}
+        actions={
+          <>
+            <button onClick={handleSeed} className="btn-secondary flex items-center gap-2">
+              <Plus size={15} /> Sembrar Datos
+            </button>
+            <button onClick={() => setModal('new')} className="btn-primary flex items-center gap-2"><Plus size={15}/> Nueva Carrera</button>
+          </>
+        }
       />
 
       {carreras.length === 0

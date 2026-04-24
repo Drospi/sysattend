@@ -57,6 +57,7 @@ export const estudiantesAPI = {
   }),
   estadoBiometria: (id) => api.get(`/biometria/estudiante/${id}/estado`),
   eliminarBiometria: (id) => api.delete(`/biometria/estudiante/${id}/biometria`),
+  seed: () => api.post('/estudiantes/seed'),
 }
 
 // ── Docentes ──────────────────────────────────────────
@@ -69,6 +70,8 @@ export const docentesAPI = {
   subirFoto: (id, formData) => api.post(`/docentes/${id}/foto`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+
+  seed: () => api.post('/docentes/seed'),
 }
 
 // ── Carreras ──────────────────────────────────────────
@@ -82,6 +85,8 @@ export const carrerasAPI = {
   crearMateria: (carrera_id, data) => api.post(`/carreras/${carrera_id}/materias`, data),
   actualizarMateria: (id, data) => api.put(`/carreras/materias/${id}`, data),
   eliminarMateria: (id) => api.delete(`/carreras/materias/${id}`),
+
+  seed: () => api.post('/carreras/seed'),
 }
 
 // ── Materias ──────────────────────────────────────────
@@ -89,6 +94,16 @@ export const materiasAPI = {
   listar: (params) => api.get('/materias/', { params }),
   asignaciones: (params) => api.get('/materias/asignaciones', { params }),
   asignarDocente: (data) => api.post('/materias/asignaciones', data),
+
+    seed: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString()
+    return api.post(`/materias/seed${queryString ? `?${queryString}` : ''}`)
+  },
+  
+  seedMateriasSolo: (params = {}) => {
+    const queryString = new URLSearchParams(params).toString()
+    return api.post(`/materias/seed/materias-solo${queryString ? `?${queryString}` : ''}`)
+  }
 }
 
 // ── Semestres / Periodos ──────────────────────────────
@@ -97,6 +112,8 @@ export const periodosAPI = {
   activo: () => api.get('/semestres/activo'),
   crear: (data) => api.post('/semestres/', data),
   activar: (id) => api.put(`/semestres/${id}/activar`),
+
+  seed: () => api.post('/semestres/seed'),
 }
 
 // ── Inscripciones ─────────────────────────────────────
@@ -105,6 +122,8 @@ export const inscripcionesAPI = {
   inscribir: (data) => api.post('/inscripciones/', data),
   masiva: (data) => api.post('/inscripciones/masiva', data),
   eliminar: (id) => api.delete(`/inscripciones/${id}`),
+
+  seed: () => api.post('/inscripciones/seed'),
 }
 
 // ── Asistencia ────────────────────────────────────────
