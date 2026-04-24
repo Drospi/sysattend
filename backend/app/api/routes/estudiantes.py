@@ -201,3 +201,133 @@ def marcar_encargado(id: int, materia_id: int, periodo_id: int,
         u.rol = "encargado"
     db.commit()
     return {"message": "Encargado asignado correctamente"}
+
+# Agrega esto al final de tu archivo estudiantes.py
+
+@router.post("/seed")
+def seed_estudiantes(db: Session = Depends(get_db)):
+    """Crea estudiantes de ejemplo (solo primera vez)"""
+    from datetime import date
+    from app.models.models import Carrera
+    
+    # Verificar si ya hay estudiantes
+    if db.query(Estudiante).count() > 0:
+        return {"message": "Ya existen estudiantes en la base de datos", "count": db.query(Estudiante).count()}
+    
+    # Obtener carreras existentes
+    carrera_sistemas = db.query(Carrera).filter(Carrera.codigo == "ISI").first()
+    carrera_civil = db.query(Carrera).filter(Carrera.codigo == "ICI").first()
+    carrera_administracion = db.query(Carrera).filter(Carrera.codigo == "ADM").first()
+    
+    if not carrera_sistemas:
+        raise HTTPException(status_code=404, detail="No existen carreras. Ejecuta primero el seed de admin/usuarios")
+    
+    # Estudiantes de ejemplo
+    estudiantes_data = [
+        {
+            "grado": "Sr.",
+            "nombres": "Carlos Andrés",
+            "apellido_paterno": "Mendoza",
+            "apellido_materno": "López",
+            "ci": "1234567",
+            "fecha_nacimiento": date(2000, 5, 15),
+            "lugar_nacimiento": "La Paz",
+            "genero": "M",
+            "grupo_sanguineo": "O+",
+            "celular": "71234567",
+            "email": "carlos.mendoza@estudiante.edu.bo",
+            "direccion": "Calle 10 #123, Zona Sur",
+            "codigo_saga": "20230001",
+            "matricula": "2023-001",
+            "anio_ingreso": 2023,
+            "estado": "regular",
+            "carrera_id": carrera_sistemas.id,
+            "tutor_nombre": "María López",
+            "tutor_relacion": "Madre",
+            "tutor_ci": "8765432",
+            "tutor_celular": "79876543"
+        },
+        {
+            "grado": "Srta.",
+            "nombres": "Ana Sofía",
+            "apellido_paterno": "Torrez",
+            "apellido_materno": "Vargas",
+            "ci": "2345678",
+            "fecha_nacimiento": date(2001, 8, 22),
+            "lugar_nacimiento": "Cochabamba",
+            "genero": "F",
+            "grupo_sanguineo": "A-",
+            "celular": "72345678",
+            "email": "ana.torrez@estudiante.edu.bo",
+            "direccion": "Av. América #456",
+            "codigo_saga": "20230002",
+            "matricula": "2023-002",
+            "anio_ingreso": 2023,
+            "estado": "regular",
+            "carrera_id": carrera_sistemas.id,
+            "tutor_nombre": "Roberto Torrez",
+            "tutor_relacion": "Padre",
+            "tutor_ci": "9876543",
+            "tutor_celular": "73456789"
+        },
+        {
+            "grado": "Sr.",
+            "nombres": "Javier Antonio",
+            "apellido_paterno": "Ríos",
+            "apellido_materno": "Flores",
+            "ci": "3456789",
+            "fecha_nacimiento": date(2000, 12, 10),
+            "lugar_nacimiento": "Santa Cruz",
+            "genero": "M",
+            "grupo_sanguineo": "AB+",
+            "celular": "73456789",
+            "email": "javier.rios@estudiante.edu.bo",
+            "direccion": "Barrio Urcupata #789",
+            "codigo_saga": "20220001",
+            "matricula": "2022-001",
+            "anio_ingreso": 2022,
+            "estado": "regular",
+            "carrera_id": carrera_civil.id,
+            "tutor_nombre": "Carmen Flores",
+            "tutor_relacion": "Madre",
+            "tutor_ci": "7654321",
+            "tutor_celular": "74567890"
+        }
+    ]
+    
+    estudiantes_creados = []
+    
+    for data in estudiantes_data:
+        # Verificar si ya existe por CI o código SAGA
+        if db.query(Estudiante).filter(
+            (Estudiante.ci == data["ci"]) | 
+            (Estudiante.codigo_saga == data["codigo_saga"])
+        ).first():
+            continue
+        
+        estudiante = Estudiante(**data)
+        db.add(estudiante)
+        db.flush()
+        
+        # Crear usuario asociado al estudiante
+        username = f"est_{data['ci']}"
+        if not db.query(Usuario).filter(Usuario.username == username).first():
+            usuario = Usuario(
+                username=username,
+                email=data["email"],
+                hashed_password=get_password_hash(data["ci"]),
+                rol="estudiante",
+                estudiante_id=estudiante.id
+            )
+            db.add(usuario)
+        
+        estudiantes_creados.append(estudiante.nombres)
+    
+    db.commit()
+    
+    return {
+        "message": "Seeder de estudiantes completado",
+        "creados": len(estudiantes_creados),
+        "estudiantes": estudiantes_creados,
+        "total_estudiantes_bd": db.query(Estudiante).count()
+    }

@@ -49,6 +49,15 @@ export default function EstudiantesPage() {
     } catch { toast.error('Error al eliminar') }
   }
 
+  const handleSeed = async () => {
+    try {
+      await estudiantesAPI.seed()
+      toast.success('Datos iniciales creados. Estudiantes de ejemplo añadidos')
+    } catch {
+      toast.error('Error al crear datos iniciales')
+    }
+  }
+
   const exportCSV = () => {
     const headers = ['CI','Nombres','Apellido P.','Apellido M.','Carrera','Estado','Código SAGA','Celular','Email']
     const rows = data.map(e => [e.ci, e.nombres, e.apellido_paterno, e.apellido_materno||'',
@@ -69,6 +78,9 @@ export default function EstudiantesPage() {
           <>
             <button onClick={exportCSV} className="btn-secondary flex items-center gap-2">
               <Download size={15} /> Exportar
+            </button>
+            <button onClick={handleSeed} className="btn-secondary flex items-center gap-2">
+              <Plus size={15} /> Datos iniciales
             </button>
             <Link to="/estudiantes/nuevo" className="btn-primary flex items-center gap-2">
               <Plus size={15} /> Nuevo Estudiante

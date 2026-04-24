@@ -33,15 +33,29 @@ export function DocentesPage() {
     catch { toast.error('Error al eliminar') }
   }
 
+  const handleSeed = async () => {
+    try {
+      await docentesAPI.seed()
+      toast.success('Datos iniciales creados. Docentes de ejemplo añadidos')
+    } catch {
+      toast.error('Error al crear datos iniciales')
+    }
+  }
+
   return (
     <div className="animate-fadeIn">
       <SectionHeader
         title="Docentes"
         subtitle={`${total} docentes registrados`}
         actions={
-          <Link to="/docentes/nuevo" className="btn-primary flex items-center gap-2">
-            <Plus size={15} /> Nuevo Docente
-          </Link>
+          <>
+            <button onClick={handleSeed} className="btn-secondary flex items-center gap-2">
+              <Plus size={15} /> Sembrar Datos
+            </button>
+            <Link to="/docentes/nuevo" className="btn-primary flex items-center gap-2">
+              <Plus size={15} /> Nuevo Docente
+            </Link>
+          </>
         }
       />
       <div className="card p-4 mb-4">

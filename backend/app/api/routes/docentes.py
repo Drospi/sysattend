@@ -131,3 +131,113 @@ async def subir_foto_docente(id: int, foto: UploadFile = File(...),
     d.foto_url = f"/uploads/fotos_docentes/{filename}"
     db.commit()
     return {"foto_url": d.foto_url}
+
+# Agrega esto al final de tu archivo docentes.py
+
+@router.post("/seed")
+def seed_docentes(db: Session = Depends(get_db)):
+    """Crea docentes de ejemplo (solo primera vez)"""
+    
+    # Verificar si ya hay docentes
+    if db.query(Docente).count() > 0:
+        return {"message": "Ya existen docentes en la base de datos", "count": db.query(Docente).count()}
+    
+    docentes_data = [
+        {
+            "grado": "Dr.",
+            "nombres": "Juan Carlos",
+            "apellido_paterno": "Mamani",
+            "apellido_materno": "Quispe",
+            "ci": "1234567",
+            "celular": "71234567",
+            "email": "juan.mamani@universidad.edu.bo",
+            "especialidad": "Ingeniería de Software, Bases de Datos",
+            "tipo_contrato": "Tiempo Completo",
+            "codigo_docente": "DOC001"
+        },
+        {
+            "grado": "Mgtr.",
+            "nombres": "María Eugenia",
+            "apellido_paterno": "Torrez",
+            "apellido_materno": "Villaroel",
+            "ci": "2345678",
+            "celular": "72345678",
+            "email": "maria.torrez@universidad.edu.bo",
+            "especialidad": "Redes, Seguridad Informática",
+            "tipo_contrato": "Tiempo Completo",
+            "codigo_docente": "DOC002"
+        },
+        {
+            "grado": "Lic.",
+            "nombres": "Carlos Alberto",
+            "apellido_paterno": "Fernández",
+            "apellido_materno": "López",
+            "ci": "3456789",
+            "celular": "73456789",
+            "email": "carlos.fernandez@universidad.edu.bo",
+            "especialidad": "Estructuras, Hidráulica",
+            "tipo_contrato": "Medio Tiempo",
+            "codigo_docente": "DOC003"
+        },
+        {
+            "grado": "PhD.",
+            "nombres": "Ana Patricia",
+            "apellido_paterno": "Gutiérrez",
+            "apellido_materno": "Nava",
+            "ci": "4567890",
+            "celular": "74567890",
+            "email": "ana.gutierrez@universidad.edu.bo",
+            "especialidad": "Inteligencia Artificial, Machine Learning",
+            "tipo_contrato": "Tiempo Completo",
+            "codigo_docente": "DOC004"
+        },
+        {
+            "grado": "Ing.",
+            "nombres": "Roberto José",
+            "apellido_paterno": "Ríos",
+            "apellido_materno": "Florez",
+            "ci": "5678901",
+            "celular": "75678901",
+            "email": "roberto.rios@universidad.edu.bo",
+            "especialidad": "Administración de Empresas, Marketing",
+            "tipo_contrato": "Tiempo Completo",
+            "codigo_docente": "DOC005"
+        }
+    ]
+    
+    docentes_creados = []
+    
+    for data in docentes_data:
+        # Verificar si ya existe por CI o código docente
+        if db.query(Docente).filter(
+            (Docente.ci == data["ci"]) | 
+            (Docente.codigo_docente == data["codigo_docente"])
+        ).first():
+            continue
+        
+        docente = Docente(**data)
+        db.add(docente)
+        db.flush()
+        
+        # Crear usuario asociado al docente
+        username = f"doc_{data['ci']}"
+        if not db.query(Usuario).filter(Usuario.username == username).first():
+            usuario = Usuario(
+                username=username,
+                email=data["email"],
+                hashed_password=get_password_hash(data["ci"]),
+                rol="docente",
+                docente_id=docente.id
+            )
+            db.add(usuario)
+        
+        docentes_creados.append(f"{data['grado']} {data['nombres']} {data['apellido_paterno']}")
+    
+    db.commit()
+    
+    return {
+        "message": "Seeder de docentes completado",
+        "creados": len(docentes_creados),
+        "docentes": docentes_creados,
+        "total_docentes_bd": db.query(Docente).count()
+    }
